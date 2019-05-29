@@ -10,7 +10,8 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     
-    let itemArray = ["Find Aragorn", "Find Gimli", "Find Legolas"]
+    var itemArray = ["Find Aragorn", "Find Gimli", "Find Legolas"]
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +50,26 @@ class ToDoListViewController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
     }
-
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        //Text field local variable made to give the closure below a reference.
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add new ToDoey item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default, handler: { (action) in
+            //what will happen when the button is pressed
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+        })
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create New Entry"
+            textField = alertTextField
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
