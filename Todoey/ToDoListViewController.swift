@@ -11,13 +11,16 @@ import UIKit
 class ToDoListViewController: UITableViewController {
     
     var itemArray = ["Find Aragorn", "Find Gimli", "Find Legolas"]
+    let defaults = UserDefaults.standard
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
+            itemArray = items
         }
+
+    }
         
     //MARK - Tableview Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,7 +43,7 @@ class ToDoListViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-    //checks to see if there is already a checkmark on the cell, if there is de-checkmark.
+    //checks to see if there is already a checkmark accessory on the cell, if there is de-checkmark.
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
         }
@@ -60,6 +63,7 @@ class ToDoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default, handler: { (action) in
             //what will happen when the button is pressed
             self.itemArray.append(textField.text!)
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             self.tableView.reloadData()
         })
         
