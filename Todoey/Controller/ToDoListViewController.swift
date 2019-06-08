@@ -10,13 +10,17 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     
-    var itemArray = [Item]()
+    
     let defaults = UserDefaults.standard
+    var itemArray = [Item]()
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        print (dataFilePath)
+        
         let newItem = Item()
         newItem.title = "Find Aragorn"
         itemArray.append(newItem)
@@ -28,6 +32,10 @@ class ToDoListViewController: UITableViewController {
         let newItem3 = Item()
         newItem3.title = "Find Gimli"
         itemArray.append(newItem3)
+        
+        if let items = defaults.array(forKey: "ToDoListArray") as? [Item]{
+            itemArray = items
+        }
         
 }
     
@@ -78,9 +86,10 @@ class ToDoListViewController: UITableViewController {
         
         item.checked = !item.checked
         
+        saveItems() 
+        
         //reloads the table data to not roll over when scrolling.
         
-        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
@@ -98,31 +107,46 @@ class ToDoListViewController: UITableViewController {
         
         //What the alert controller says in the text button.
         
-        let action = UIAlertAction(title: "Add Item", style: .default, handler: { (action) in
+        //let action = UIAlertAction(title: "Add Item", style: .default, handler: { (action) in
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-        //what will happen when the button is pressed
+            //what will happen when the button is pressed
             
             let newItem = Item()
             newItem.title = textField.text!
-            
             self.itemArray.append(newItem)
             
-            if let items = self.defaults.array(forKey: "ToDoListArray") as? [Item] {
-                self. itemArray = items
-            }
+            self.saveItems()
             
-            self.tableView.reloadData()
-            
-            
-        })
+        }
         
-        alert.addTextField { (alertTextField) in
+            alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create New Entry"
             textField = alertTextField
         }
+            
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
+        
     }
     
+    func saveItems(){
+        do{
+            let encoder = PropertyListEncoder()
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        }
+        catch{
+            print("error encoding itemArray \(error)")
+        }
+        self.tableView.reloadData()
+    }
 }
+    
+    
+
+        
+
+
 
