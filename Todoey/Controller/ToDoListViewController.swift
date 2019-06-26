@@ -11,15 +11,17 @@ import CoreData
 
 class ToDoListViewController: UITableViewController  {
     
-    let defaults = UserDefaults.standard
     var itemArray = [Item]()
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    var selectedCategory : Category?{
+        didSet{
+            loadItems()
+        }
+    }
+
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loadItems()
         
         }
 
@@ -80,6 +82,8 @@ class ToDoListViewController: UITableViewController  {
             
             newItem.checked = false
             
+            newItem.parentCategory = self.selectedCategory
+            
             self.saveItems()
             
         }
@@ -113,9 +117,16 @@ class ToDoListViewController: UITableViewController  {
         self.tableView.reloadData()
     }
     
-    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest()){
+    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest(), predicate : NSPredicate? = nil){
         
         //let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        if let additionalPredicate = predicate{
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        }else{
+            request.predicate = categoryPredicate
+        }
         
         do {
             
