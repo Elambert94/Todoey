@@ -34,7 +34,7 @@ class ToDoListViewController: UITableViewController  {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
         if let  newItem = toDoItems?[indexPath.row] {
             cell.textLabel?.text = newItem.title
@@ -102,25 +102,25 @@ class ToDoListViewController: UITableViewController  {
 }
 
     //MARK: - Search Bar Methods
-    
+ 
 extension ToDoListViewController: UISearchBarDelegate{
         
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
-
-            toDoItems = toDoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
-            tableView.reloadData()
-        }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
         
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            if searchBar.text?.count == 0{
-                loadItems()
-
-                DispatchQueue.main.async {
-                    searchBar.resignFirstResponder()
-                }
+        toDoItems = toDoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0{
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
             }
         }
     }
+}
 
 
         
